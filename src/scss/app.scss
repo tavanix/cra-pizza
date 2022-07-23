@@ -165,6 +165,10 @@ body {
         }
     }
 
+    .content__items {
+        display: flex;
+    }
+
     &__item {
         display: flex;
         width: 100%;
