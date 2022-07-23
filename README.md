@@ -9,9 +9,9 @@ Technologies used:
 - Axios + Fetch
 - React Hooks
 - CSS-Modules / SCSS 
-- React Content Loader 
+- React Content Loader
 - React Pagination 
 - Lodash.Debounce
 - Code Splitting, React Loadable, useWhyDidYouUpdate
 
-Data storage sourcing: [https://mockapi.io/]
+Data storage sourcing: [https://mockapi.io/projects/62d45328cd960e45d456a05d]
