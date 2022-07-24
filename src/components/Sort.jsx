@@ -1,12 +1,22 @@
 import React from 'react'
 
-export default function Sort() {
+export default function Sort({ value, onClickSort }) {
     const [open, setOpen] = React.useState(false)
-    const [selected, setSelected] = React.useState(0)
-    const list = ['популярности', 'цене', 'алфавиту']
+    const list = [
+        {
+            name: 'популярности (DESC)',
+            sortOption: 'rating',
+            sortOrder: 'desc',
+        },
+        { name: 'популярности (ASC)', sortOption: 'rating', sortOrder: 'asc' },
+        { name: 'цене (DESC)', sortOption: 'price', sortOrder: 'desc' },
+        { name: 'цене (ASC)', sortOption: 'price', sortOrder: 'asc' },
+        { name: 'алфавиту (DESC)', sortOption: 'title', sortOrder: 'desc' },
+        { name: 'алфавиту (ASC)', sortOption: 'title', sortOrder: 'asc' },
+    ]
 
     const onClickListItem = (i) => {
-        setSelected(i)
+        onClickSort(i)
         setOpen(false)
     }
 
@@ -26,21 +36,23 @@ export default function Sort() {
                     />
                 </svg>
                 <b>Сортировка по:</b>
-                <span onClick={() => setOpen(!open)}>{list[selected]}</span>
+                <span onClick={() => setOpen(!open)}>{value.name}</span>
             </div>
             {open && (
                 <div className='sort__popup'>
                     <ul>
-                        {list.map((name, index) => {
+                        {list.map((obj, index) => {
                             return (
                                 <li
                                     key={index}
-                                    onClick={() => onClickListItem(index)}
+                                    onClick={() => onClickListItem(obj)}
                                     className={
-                                        selected === index ? 'active' : ''
+                                        value.sortOption === obj.sortOption
+                                            ? 'active'
+                                            : ''
                                     }
                                 >
-                                    {name}
+                                    {obj.name}
                                 </li>
                             )
                         })}
