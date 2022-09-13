@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 
 import Categories from '../components/Categories'
 import Sort from '../components/Sort'
@@ -7,31 +8,38 @@ import Skeleton from '../components/PizzaBlock/Skeleton'
 import Pagination from '../components/Pagination'
 import { SearchContext } from '../App'
 
+import { useSelector, useDispatch } from 'react-redux'
+import { setCategoryId } from '../redux/slices/filterSlice'
+
 const Home = () => {
+    const dispatch = useDispatch()
+    const categoryId = useSelector((state) => state.filter.categoryId)
+    const sortType = useSelector((state) => state.filter.sort)
+
     const [items, setItems] = React.useState([])
     const { searchValue } = React.useContext(SearchContext)
     const [currentPage, setCurrentPage] = React.useState(1)
     const [isLoading, setIsLoading] = React.useState(true)
-    const [categoryId, setCategoryId] = React.useState(0)
-    const [sortType, setSortType] = React.useState({
-        name: 'популярности (DESC)',
-        sortOption: 'rating',
-        sortOrder: 'desc',
-    })
+
+    const onChangeCategory = (id) => {
+        dispatch(setCategoryId(id))
+    }
 
     const category = categoryId === 0 ? '' : `category=${categoryId}`
     const search = searchValue ? `&search=${searchValue}` : ''
 
     React.useEffect(() => {
         setIsLoading(true)
-        fetch(
-            `https://62d45328cd960e45d456a05c.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType.sortOption}&order=${sortType.sortOrder}${search}`
-        )
-            .then((response) => response.json())
-            .then((data) => {
-                setItems(data)
+
+        axios
+            .get(
+                `https://62d45328cd960e45d456a05c.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType.sortOption}&order=${sortType.sortOrder}${search}`
+            )
+            .then((response) => {
+                setItems(response.data)
                 setIsLoading(false)
             })
+
         window.scrollTo(0, 0)
     }, [category, sortType, searchValue, currentPage])
 
@@ -48,9 +56,9 @@ const Home = () => {
             <div className='content__top'>
                 <Categories
                     value={categoryId}
-                    onClickCategory={(id) => setCategoryId(id)}
+                    onClickCategory={onChangeCategory}
                 />
-                <Sort value={sortType} onClickSort={(id) => setSortType(id)} />
+                <Sort />
             </div>
             <h2 className='content__title'>Все пиццы</h2>
             <div className='content__items'>

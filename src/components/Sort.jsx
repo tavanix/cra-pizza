@@ -1,22 +1,28 @@
 import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setSort } from '../redux/slices/filterSlice'
 
-export default function Sort({ value, onClickSort }) {
+const list = [
+    {
+        name: 'популярности (DESC)',
+        sortOption: 'rating',
+        sortOrder: 'desc',
+    },
+    { name: 'популярности (ASC)', sortOption: 'rating', sortOrder: 'asc' },
+    { name: 'цене (DESC)', sortOption: 'price', sortOrder: 'desc' },
+    { name: 'цене (ASC)', sortOption: 'price', sortOrder: 'asc' },
+    { name: 'алфавиту (DESC)', sortOption: 'title', sortOrder: 'desc' },
+    { name: 'алфавиту (ASC)', sortOption: 'title', sortOrder: 'asc' },
+]
+
+export default function Sort() {
+    const dispatch = useDispatch()
+    const sort = useSelector((state) => state.filter.sort)
+
     const [open, setOpen] = React.useState(false)
-    const list = [
-        {
-            name: 'популярности (DESC)',
-            sortOption: 'rating',
-            sortOrder: 'desc',
-        },
-        { name: 'популярности (ASC)', sortOption: 'rating', sortOrder: 'asc' },
-        { name: 'цене (DESC)', sortOption: 'price', sortOrder: 'desc' },
-        { name: 'цене (ASC)', sortOption: 'price', sortOrder: 'asc' },
-        { name: 'алфавиту (DESC)', sortOption: 'title', sortOrder: 'desc' },
-        { name: 'алфавиту (ASC)', sortOption: 'title', sortOrder: 'asc' },
-    ]
 
-    const onClickListItem = (i) => {
-        onClickSort(i)
+    const onClickListItem = (obj) => {
+        dispatch(setSort(obj))
         setOpen(false)
     }
 
@@ -36,7 +42,7 @@ export default function Sort({ value, onClickSort }) {
                     />
                 </svg>
                 <b>Сортировка по:</b>
-                <span onClick={() => setOpen(!open)}>{value.name}</span>
+                <span onClick={() => setOpen(!open)}>{sort.name}</span>
             </div>
             {open && (
                 <div className='sort__popup'>
@@ -47,7 +53,7 @@ export default function Sort({ value, onClickSort }) {
                                     key={index}
                                     onClick={() => onClickListItem(obj)}
                                     className={
-                                        value.sortOption === obj.sortOption
+                                        sort.sortOption === obj.sortOption
                                             ? 'active'
                                             : ''
                                     }

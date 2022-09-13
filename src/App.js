@@ -6,12 +6,16 @@ import Home from './pages/Home'
 import Cart from './pages/Cart'
 import NotFound from './pages/NotFound'
 
+import { useSelector, useDispatch } from 'react-redux'
+
 import './scss/app.scss'
 
 export const SearchContext = React.createContext()
 
 function App() {
     const [searchValue, setSearchValue] = React.useState('')
+    const dispatch = useDispatch()
+
     return (
         <div className='wrapper'>
             <SearchContext.Provider value={{ searchValue, setSearchValue }}>
