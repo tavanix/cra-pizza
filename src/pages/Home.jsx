@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from 'axios'
 import qs from 'qs'
 import { useNavigate } from 'react-router-dom'
 
@@ -17,6 +16,7 @@ import {
     setCurrentPage,
     setFilters,
 } from '../redux/slices/filterSlice'
+import { fetchPizzas } from '../redux/slices/pizzaSlice'
 
 const Home = () => {
     const navigate = useNavigate()
@@ -26,10 +26,9 @@ const Home = () => {
 
     const { categoryId, currentPage } = useSelector((state) => state.filter)
     const sortType = useSelector((state) => state.filter.sort)
+    const { items, status } = useSelector((state) => state.pizza)
 
-    const [items, setItems] = React.useState([])
     const { searchValue } = React.useContext(SearchContext)
-    const [isLoading, setIsLoading] = React.useState(true)
 
     const onChangeCategory = (id) => {
         dispatch(setCategoryId(id))
@@ -39,20 +38,14 @@ const Home = () => {
         dispatch(setCurrentPage(number))
     }
 
-    const fetchPizzas = async () => {
-        setIsLoading(true)
-
-        try {
-            const response = await axios.get(
-                `https://62d45328cd960e45d456a05c.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType.sortOption}&order=${sortType.sortOrder}${search}`
-            )
-            setItems(response.data)
-        } catch (error) {
-            console.log('Error occured:', error)
-            alert('Ошибка при получении пицц!')
-        } finally {
-            setIsLoading(false)
-        }
+    const getPizzas = async () => {
+        dispatch(
+            fetchPizzas({
+                currentPage,
+                category,
+                sortType,
+            })
+        )
 
         window.scrollTo(0, 0)
     }
@@ -91,7 +84,7 @@ const Home = () => {
     React.useEffect(() => {
         window.scrollTo(0, 0)
         if (!isSearch.current) {
-            fetchPizzas()
+            getPizzas()
         }
         isSearch.current = false
     }, [categoryId, sortType, searchValue, currentPage])
@@ -117,9 +110,20 @@ const Home = () => {
                 <Sort />
             </div>
             <h2 className='content__title'>Все пиццы</h2>
-            <div className='content__items'>
-                {isLoading ? skeletons : pizzas}
-            </div>
+            {status === 'error' ? (
+                <div className='content__error-info'>
+                    <h2>Произошла ошибка</h2>
+                    <p>
+                        К сожалению, не удалось получить пиццы... Попробуйте
+                        повторить попытку позже.
+                    </p>
+                </div>
+            ) : (
+                <div className='content__items'>
+                    {status === 'loading' ? skeletons : pizzas}
+                </div>
+            )}
+
             <Pagination currentPage={currentPage} onChangePage={onChangePage} />
         </div>
     )
