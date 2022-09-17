@@ -39,16 +39,22 @@ const Home = () => {
         dispatch(setCurrentPage(number))
     }
 
-    const fetchPizzas = () => {
+    const fetchPizzas = async () => {
         setIsLoading(true)
-        axios
-            .get(
+
+        try {
+            const response = await axios.get(
                 `https://62d45328cd960e45d456a05c.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType.sortOption}&order=${sortType.sortOrder}${search}`
             )
-            .then((response) => {
-                setItems(response.data)
-                setIsLoading(false)
-            })
+            setItems(response.data)
+        } catch (error) {
+            console.log('Error occured:', error)
+            alert('Ошибка при получении пицц!')
+        } finally {
+            setIsLoading(false)
+        }
+
+        window.scrollTo(0, 0)
     }
 
     // if params changed and there've been first render
